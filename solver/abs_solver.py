@@ -21,6 +21,34 @@ class AbstractSolver:
     def solve(self):
         pass
 
+    def _init_x_s(self):
+        n = self.mat_a.shape[1]
+
+        x = np.empty(shape=(n, ), dtype=np.float64)
+        s = np.empty(shape=(n, ), dtype=np.float64)
+
+        x.fill(self.init_val)
+        s.fill(self.init_val)
+
+        return x, s
+
+    def _get_alpha(self, x, s, delta_x, delta_s, theta):
+        alpha_x = 1.0
+        alpha_s = 1.0
+        for i in range(self.mat_a.shape[1]):
+            if delta_x[i] < 0:
+                # get alpha primal
+                alpha_x = min(alpha_x, -x[i]/delta_x[i])
+            if delta_s[i] < 0:
+                # get alpha dual
+                alpha_s = min(alpha_s, -s[i]/delta_s[i])
+        # choose smallest alpha
+        alpha_x = min(1.0, theta * alpha_x)
+        alpha_s = min(1.0, theta * alpha_s)
+        alpha_k = min(1.0, theta * min(alpha_s, alpha_x))
+
+        return alpha_k, alpha_x, alpha_s
+
     def _gen_data(self, k, x, y, s, delta_x, delta_y, delta_s, alpha_k):
         iter_data = {}
         diff = np.dot(self.mat_a, x) - self.vec_b
