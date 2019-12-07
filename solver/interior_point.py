@@ -9,12 +9,9 @@ class InteriorPointMethod(AbstractSolver):
 
     def solve(self, theta=0.95, gamma=0.1, epsilon=0.0001):
         n = self.mat_a.shape[1]
+
         # Set initial points of (x, y, s), where x > 0 and s > 0
-
-        x, s = self._init_x_s()
-
-        e = np.empty(shape=(n, ), dtype=np.float64)
-        x.fill(self.init_val)
+        x, s, e = self._init_vec(n, 3)
 
         y = np.zeros(shape=(self.mat_a.shape[0], ))
 
@@ -25,7 +22,7 @@ class InteriorPointMethod(AbstractSolver):
 
         x_iterations = []
 
-        while np.dot(x.T, s) > epsilon:
+        while np.dot(x, s) > epsilon:
 
             x_iterations.append(x)
 
@@ -44,7 +41,7 @@ class InteriorPointMethod(AbstractSolver):
             delta_s = r_dual - np.dot(self.mat_a.T, delta_y)
             delta_x = np.dot(s_reciprocal, (gamma * mu_k * e) - np.dot(x_, delta_s)) - x
 
-            alpha_k, alpha_x, alpha_s = self._get_alpha(x, s, delta_x, delta_s, theta)
+            alpha_k, alpha_x, alpha_s = self._get_steplength(x, s, delta_x, delta_s, theta)
 
             # create new iterate
             x = x + alpha_x * delta_x

@@ -10,10 +10,8 @@ class PathFollowing(AbstractSolver):
         m = self.mat_a.shape[0]
         n = self.mat_a.shape[1]
 
-        x, s = self._init_x_s()
-
-        y = np.empty(shape=(m,), dtype=np.float64)
-        y.fill(self.init_val)
+        x, s = self._init_vec(n, 2)
+        y = self._init_vec(m)
 
         jacobian = np.zeros(shape=(m + n + n, n + m + n))
         jacobian[0:m, 0:n] = np.copy(self.mat_a)
@@ -28,7 +26,6 @@ class PathFollowing(AbstractSolver):
             self._gen_data(k, x, y, s, 0, 0, 0, 1.0)
 
         x_iterations = []
-        sigma_k = sigma
         while abs(np.dot(x, s)) > epsilon:
             k += 1
 
@@ -39,7 +36,7 @@ class PathFollowing(AbstractSolver):
 
             newton[0:m] = self.vec_b - np.dot(self.mat_a, x)
             newton[m:m + n] = self.vec_c - np.dot(self.mat_a.T, y) - s
-            newton[m + n:m + n + n] = np.copy(sigma_k * mu_k * np.ones(shape=(n,))
+            newton[m + n:m + n + n] = np.copy(sigma * mu_k * np.ones(shape=(n,))
                                               - np.dot(np.dot(np.diag(x), np.diag(s)), np.ones(shape=(n,))))
 
             # solve for delta
@@ -48,7 +45,7 @@ class PathFollowing(AbstractSolver):
             delta_y = delta[n:n + m]
             delta_s = delta[n + m:n + m + n]
 
-            alpha_k, alpha_x, alpha_s = self._get_alpha(x, s, delta_x, delta_s, eta)
+            alpha_k, alpha_x, alpha_s = self._get_steplength(x, s, delta_x, delta_s, eta)
 
             x = x + alpha_k * delta_x
             y = y + alpha_k * delta_y

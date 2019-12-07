@@ -6,9 +6,15 @@ from collections import OrderedDict
 class AbstractSolver:
     def __init__(self, coefficient_mat, constraint_vec, minimization_coefficient, init_val, iter_data):
         assert coefficient_mat.shape[0] == constraint_vec.shape[0], \
-            'dimensions of A and b must be compatible!'
+            'dimensions of A ({} x {}) and b ({} x {}) are not compatible!'.format(
+                coefficient_mat.shape[0], coefficient_mat.shape[1],
+                constraint_vec.shape[0], constraint_vec.shape[1]
+            )
         assert coefficient_mat.shape[1] == minimization_coefficient.shape[0], \
-            'dimensions of A and c must be compatible!'
+            'dimensions of A ({} x {}) and c ({} x {}) are not compatible!'.format(
+                coefficient_mat.shape[0], coefficient_mat.shape[1],
+                minimization_coefficient.shape[0], minimization_coefficient.shape[1]
+            )
         self.mat_a = coefficient_mat
         self.vec_b = constraint_vec
         self.vec_c = minimization_coefficient
@@ -21,18 +27,18 @@ class AbstractSolver:
     def solve(self):
         pass
 
-    def _init_x_s(self):
-        n = self.mat_a.shape[1]
+    def _init_vec(self, size, how_many=1):
+        vecs = []
+        for i in range(how_many):
+            v = np.empty(shape=(size, ), dtype=np.float64)
+            v.fill(self.init_val)
+            if how_many == 1:
+                return v
+            vecs.append(v)
 
-        x = np.empty(shape=(n, ), dtype=np.float64)
-        s = np.empty(shape=(n, ), dtype=np.float64)
+        return tuple(vecs)
 
-        x.fill(self.init_val)
-        s.fill(self.init_val)
-
-        return x, s
-
-    def _get_alpha(self, x, s, delta_x, delta_s, theta):
+    def _get_steplength(self, x, s, delta_x, delta_s, theta):
         alpha_x = 1.0
         alpha_s = 1.0
         for i in range(self.mat_a.shape[1]):
