@@ -30,7 +30,7 @@ class AbstractSolver:
     def _init_vec(self, size, how_many=1):
         vecs = []
         for i in range(how_many):
-            v = np.empty(shape=(size, ), dtype=np.float64)
+            v = np.empty(shape=(size,), dtype=np.float64)
             v.fill(self.init_val)
             if how_many == 1:
                 return v
@@ -44,10 +44,10 @@ class AbstractSolver:
         for i in range(self.mat_a.shape[1]):
             if delta_x[i] < 0:
                 # get alpha primal
-                alpha_x = min(alpha_x, -x[i]/delta_x[i])
+                alpha_x = min(alpha_x, -x[i] / delta_x[i])
             if delta_s[i] < 0:
                 # get alpha dual
-                alpha_s = min(alpha_s, -s[i]/delta_s[i])
+                alpha_s = min(alpha_s, -s[i] / delta_s[i])
         # choose smallest alpha
         alpha_x = min(1.0, theta * alpha_x)
         alpha_s = min(1.0, theta * alpha_s)
@@ -81,6 +81,8 @@ class AbstractSolver:
     def print_metric(self):
         if self.iter_metric is None:
             print('Iteration data was not recorded.')
+            return False
+
         else:
             for k, v in self.iter_metric.items():
                 print('=====================================================')
@@ -92,11 +94,18 @@ class AbstractSolver:
                 print('-----------------------------------------------------')
                 print('Delta X -> {}'.format(v['delta_x']))
                 print('-----------------------------------------------------')
+                print('Alpha k -> {}'.format(v['alpha_k']))
+                print('-----------------------------------------------------')
                 print('Ax - b = {} '.format(v['diff']))
                 print('-----------------------------------------------------')
                 print('Norm of Ax - b -> {} '.format(v['diff_norm']))
                 print('-----------------------------------------------------')
                 print('Coordinates -> {}'.format(v['x_val']))
                 print('-----------------------------------------------------')
+                print('Y Values -> {}'.format(v['y_val']))
+                print('-----------------------------------------------------')
+                print('S Values -> {}'.format(v['s_val']))
+                print('-----------------------------------------------------')
                 print('Functional value -> {}'.format(v['obj_val']))
                 print('=====================================================')
+        return True

@@ -13,12 +13,12 @@ class InteriorPointMethod(AbstractSolver):
         # Set initial points of (x, y, s), where x > 0 and s > 0
         x, s, e = self._init_vec(n, 3)
 
-        y = np.zeros(shape=(self.mat_a.shape[0], ))
+        y = np.zeros(shape=(self.mat_a.shape[0],))
 
         k = 0
 
         if self.iter_metric is not None:
-            self.__gen_data(k, x, y, s, 0, 0, 0, 1.0, None, None)
+            self.__gen_data(k, x, y, s, 0, 0, 0, 1.0, 1.0, 1.0, None, None)
 
         x_iterations = []
 
@@ -48,14 +48,16 @@ class InteriorPointMethod(AbstractSolver):
             y = y + alpha_k * delta_y
             s = s + alpha_s * delta_s
 
-            if self.iter_metric is not None:
-                self.__gen_data(k, x, y, s, delta_x, delta_y, delta_s, alpha_k, m_, r)
-
             k += 1
+
+            if self.iter_metric is not None:
+                self.__gen_data(k, x, y, s, delta_x, delta_y, delta_s, alpha_k, alpha_x, alpha_s, m_, r)
 
         return x, x_iterations
 
-    def __gen_data(self, k, x, y, s, delta_x, delta_y, delta_s, alpha_k, m, r):
+    def __gen_data(self, k, x, y, s, delta_x, delta_y, delta_s, alpha_k, alpha_x, alpha_s, m, r):
         super()._gen_data(k, x, y, s, delta_x, delta_y, delta_s, alpha_k)
+        self.iter_metric[k]['alpha_x'] = alpha_x
+        self.iter_metric[k]['alpha_s'] = alpha_s
         self.iter_metric[k]['m'] = m
         self.iter_metric[k]['r'] = r
