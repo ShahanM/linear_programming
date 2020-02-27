@@ -53,7 +53,7 @@ class AbstractSolver:
         alpha_s = min(1.0, theta * alpha_s)
         alpha_k = min(1.0, theta * min(alpha_s, alpha_x))
 
-        return alpha_k, alpha_x, alpha_s
+        return alpha_x, alpha_s, alpha_k
 
     def _gen_data(self, k, x, y, s, delta_x, delta_y, delta_s, alpha_k):
         iter_data = {}

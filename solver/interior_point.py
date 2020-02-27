@@ -41,7 +41,7 @@ class InteriorPointMethod(AbstractSolver):
             delta_s = r_dual - np.dot(self.mat_a.T, delta_y)
             delta_x = np.dot(s_reciprocal, (gamma * mu_k * e) - np.dot(x_, delta_s)) - x
 
-            alpha_k, alpha_x, alpha_s = self._get_steplength(x, s, delta_x, delta_s, theta)
+            alpha_x, alpha_s, alpha_k = self._get_steplength(x, s, delta_x, delta_s, theta)
 
             # create new iterate
             x = x + alpha_x * delta_x

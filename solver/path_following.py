@@ -45,7 +45,7 @@ class PathFollowing(AbstractSolver):
             delta_y = delta[n:n + m]
             delta_s = delta[n + m:n + m + n]
 
-            alpha_k, alpha_x, alpha_s = self._get_steplength(x, s, delta_x, delta_s, eta)
+            alpha_x, alpha_s, alpha_k = self._get_steplength(x, s, delta_x, delta_s, eta)
 
             x = x + alpha_k * delta_x
             y = y + alpha_k * delta_y
